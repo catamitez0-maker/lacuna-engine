@@ -1,0 +1,42 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Build / cache
+dist/
+coverage/
+.turbo/
+.eslintcache
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Local outputs
+outputs/
+
+# Test artifacts
+playwright-report/
+test-results/
+
+# Local databases
+*.db
+*.db-journal
+*.db-wal
+*.db-shm

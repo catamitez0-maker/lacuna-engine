@@ -1,0 +1,48 @@
+{
+  "name": "lacuna-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A neutral TypeScript / Next.js monorepo skeleton for asynchronous narrative world engines.",
+  "packageManager": "pnpm@11.8.0",
+  "scripts": {
+    "dev": "corepack pnpm --filter @lacuna-engine/web dev",
+    "build": "corepack pnpm build:web && corepack pnpm build:studio",
+    "lint": "corepack pnpm --filter @lacuna-engine/web lint",
+    "typecheck": "corepack pnpm -r --if-present typecheck",
+    "test": "vitest run",
+    "format": "prettier --check .",
+    "db:generate": "prisma generate",
+    "build:packages": "corepack pnpm -r --filter \"./packages/*\" --if-present build:types",
+    "check": "corepack pnpm lint && corepack pnpm typecheck && corepack pnpm content:validate && corepack pnpm test && corepack pnpm build:packages && corepack pnpm build",
+    "content:validate": "tsx scripts/validate-content.ts",
+    "db:push": "prisma db push",
+    "build:web": "corepack pnpm --filter @lacuna-engine/web build",
+    "build:studio": "corepack pnpm --filter @lacuna-engine/studio build",
+    "test:e2e": "playwright test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@prisma/client": "^7.2.0",
+    "better-sqlite3": "^12.11.1",
+    "yaml": "^2.8.2",
+    "zod": "^4.2.1",
+    "zustand": "^5.0.9"
+  },
+  "devDependencies": {
+    "@lacuna-engine/anchor-resolver": "workspace:*",
+    "@lacuna-engine/content-loader": "workspace:*",
+    "@lacuna-engine/narrative-runtime": "workspace:*",
+    "@lacuna-engine/persistence": "workspace:*",
+    "@lacuna-engine/schema": "workspace:*",
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.0.0",
+    "prettier": "^3.7.4",
+    "prisma": "^7.2.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.0.16"
+  }
+}

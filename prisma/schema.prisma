@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model World {
+  id          String   @id
+  name        String
+  version     String
+  description String?
+  enabled     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cities    City[]
+  timelines PlayerTimeline[]
+  traces    Trace[]
+  pulses    DailyPulse[]
+  reports   ObserverReport[]
+  sessions  RuntimeSession[]
+}
+
+model City {
+  id              String   @id
+  worldId         String
+  name            String
+  description     String?
+  stateSchemaJson String
+  initialStateJson String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  world     World @relation(fields: [worldId], references: [id], onDelete: Cascade)
+  timelines PlayerTimeline[]
+  traces    Trace[]
+  pulses    DailyPulse[]
+  reports   ObserverReport[]
+  sessions  RuntimeSession[]
+}
+
+model Player {
+  id        String   @id
+  label     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  timelines PlayerTimeline[]
+}
+
+model PlayerTimeline {
+  id                 String   @id
+  playerId           String
+  worldId            String
+  cityId             String
+  roleId             String
+  currentDayId       String
+  currentSceneId     String
+  personalFlagsJson  String
+  unlockedArchiveIds String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  world  World  @relation(fields: [worldId], references: [id], onDelete: Cascade)
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  traces Trace[]
+}
+
+model Trace {
+  id               String   @id
+  sessionId        String?
+  playerTimelineId String
+  worldId          String
+  cityId           String
+  dayId            String
+  type             String
+  visibility       String
+  weight           Float
+  effectsJson      String
+  createdAt        DateTime @default(now())
+
+  timeline PlayerTimeline @relation(fields: [playerTimelineId], references: [id], onDelete: Cascade)
+  world    World          @relation(fields: [worldId], references: [id], onDelete: Cascade)
+  city     City           @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  session  RuntimeSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+}
+
+model DailyPulse {
+  id                 String   @id
+  sessionId          String?
+  worldId            String
+  cityId             String
+  dayId              String
+  stateBeforeJson    String
+  traceIdsJson       String
+  stateAfterJson     String
+  selectedVariantIdsJson String
+  observerReportId   String
+  createdAt          DateTime @default(now())
+
+  world  World @relation(fields: [worldId], references: [id], onDelete: Cascade)
+  city    City            @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  session RuntimeSession?  @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  report  ObserverReport?
+}
+
+model ObserverReport {
+  id                     String   @id
+  worldId                String
+  cityId                 String
+  dayId                  String
+  pulseId                String?  @unique
+  title                  String
+  summary                String
+  traceSummaryJson       String
+  stateDeltaSummaryJson  String
+  selectedVariantSummaryJson String
+  createdAt              DateTime @default(now())
+
+  world World       @relation(fields: [worldId], references: [id], onDelete: Cascade)
+  city  City        @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  pulse DailyPulse? @relation(fields: [pulseId], references: [id], onDelete: SetNull)
+}
+
+model RuntimeSession {
+  id              String   @id
+  worldId         String
+  cityId          String
+  currentDayId    String
+  timelineIdsJson String
+  status          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  world  World        @relation(fields: [worldId], references: [id], onDelete: Cascade)
+  city   City         @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  traces Trace[]
+  pulses DailyPulse[]
+}
+

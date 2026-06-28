@@ -1,0 +1,22 @@
+{
+  "name": "@lacuna-engine/kernel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build:types": "tsc -p tsconfig.json --noEmit false --emitDeclarationOnly true --declaration true --rootDir src --outDir dist"
+  },
+  "dependencies": {
+    "@lacuna-engine/content-loader": "workspace:*",
+    "@lacuna-engine/narrative-runtime": "workspace:*",
+    "@lacuna-engine/schema": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,122 @@
+id: empty-world-template
+name: Empty World Template
+version: 0.1.0
+description: A disabled placeholder World Pack for validating the framework flow.
+enabled: false
+cities:
+  - id: placeholder-city-module
+    name: Placeholder City Module
+    description: A city module would appear here.
+    stateSchema:
+      continuity:
+        type: number
+        description: Generic continuity state.
+      trace_weight:
+        type: number
+        description: Generic accumulated trace weight.
+    initialState:
+      continuity: 0
+      trace_weight: 0
+    entryRoles:
+      - id: placeholder-role-a
+        title: Placeholder Role A
+        entryDayId: placeholder-day-1
+        entrySceneId: placeholder-scene-opening
+        influenceRadius: personal
+        knowledgeTags:
+          - placeholder-knowledge
+        accessTags:
+          - placeholder-access
+      - id: placeholder-role-b
+        title: Placeholder Role B
+        entryDayId: placeholder-day-1
+        entrySceneId: placeholder-scene-opening
+        influenceRadius: local
+        knowledgeTags:
+          - placeholder-knowledge
+        accessTags:
+          - placeholder-access
+      - id: placeholder-role-c
+        title: Placeholder Role C
+        entryDayId: placeholder-day-1
+        entrySceneId: placeholder-scene-opening
+        influenceRadius: regional
+        knowledgeTags:
+          - placeholder-knowledge
+        accessTags:
+          - placeholder-access
+    identityFragments:
+      - id: fragment-a
+        label: Fragment A
+        description: A fragment choice would appear here.
+        mappedRoleId: placeholder-role-a
+        weight: 1
+      - id: fragment-b
+        label: Fragment B
+        description: A fragment choice would appear here.
+        mappedRoleId: placeholder-role-b
+        weight: 1
+      - id: fragment-c
+        label: Fragment C
+        description: A fragment choice would appear here.
+        mappedRoleId: placeholder-role-c
+        weight: 1
+    days:
+      - id: placeholder-day-1
+        cityId: placeholder-city-module
+        title: Placeholder Day
+        order: 1
+        publicEventIds: []
+        roleEventIds: []
+        anchorId: placeholder-anchor-1
+    anchors:
+      - id: placeholder-anchor-1
+        cityId: placeholder-city-module
+        dayId: placeholder-day-1
+        title: Placeholder Anchor
+        fixed: true
+        variants:
+          - id: placeholder-variant-neutral
+            title: Placeholder Variant Neutral
+            conditions:
+              - key: continuity
+                operator: ">="
+                value: 0
+            effects:
+              continuity: 1
+          - id: placeholder-variant-trace
+            title: Placeholder Variant With Trace
+            conditions:
+              - key: trace_weight
+                operator: ">="
+                value: 1
+            effects:
+              continuity: 2
+    scenes:
+      - id: placeholder-scene-opening
+        cityId: placeholder-city-module
+        dayId: placeholder-day-1
+        title: Placeholder Scene
+        body: A placeholder scene would appear here.
+        actionIds:
+          - placeholder-action-record
+    prologueActions:
+      - id: prologue-observe
+        label: observe
+        tendency: observe
+      - id: prologue-help
+        label: help
+        tendency: help
+      - id: prologue-hide
+        label: hide
+        tendency: hide
+    placeholderActions:
+      - id: placeholder-action-record
+        label: placeholder action
+        trace:
+          type: system_record
+          visibility: local
+          weight: 1
+          effects:
+            trace_weight: 1
+            continuity: 1
