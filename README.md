@@ -136,6 +136,8 @@ Runtime sessions can be inspected and controlled through `GET /api/sessions/:ses
 `@lacuna-engine/extension-api` reserves typed hooks for:
 
 - AI narrator adapters
+- AI steward / hosted world-management agents
+- NPC AI agents
 - visual novel layers
 - image or media renderers
 - text-to-speech adapters
