@@ -1,6 +1,7 @@
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { selectAnchorVariants } from "@lacuna-engine/anchor-resolver";
-import { loadEmptyWorldTemplate } from "@lacuna-engine/content-loader";
+import { loadEmptyWorldTemplate } from "@lacuna-engine/content-loader/server";
 import { parseWorldPack } from "@lacuna-engine/schema";
 import {
   createPlayerTimelineFromFragment,
@@ -8,11 +9,13 @@ import {
   listIdentityFragments,
   performRuntimeAction,
   selectPrologueAction,
-  settleRuntimePulse
+  settleRuntimePulse,
 } from "@lacuna-engine/narrative-runtime";
 
 describe("framework engine flow", () => {
-  const world = loadEmptyWorldTemplate();
+  const world = loadEmptyWorldTemplate({
+    contentDir: join(process.cwd(), "content/worlds"),
+  });
   const city = getPrimaryCity(world);
   const prologueRecord = selectPrologueAction(city, "prologue-observe");
   const fragments = listIdentityFragments(city, [prologueRecord]);
@@ -23,7 +26,6 @@ describe("framework engine flow", () => {
     expect(world.enabled).toBe(false);
     expect(city.id).toBe("placeholder-city-module");
   });
-
 
   it("rejects content packs with broken internal references", () => {
     const invalidWorld = structuredClone(world);
@@ -38,7 +40,7 @@ describe("framework engine flow", () => {
     expect(fragments.map((candidate) => candidate.label)).toEqual([
       "Fragment A",
       "Fragment B",
-      "Fragment C"
+      "Fragment C",
     ]);
   });
 
@@ -49,7 +51,7 @@ describe("framework engine flow", () => {
       world,
       city,
       fragment: fragment!,
-      prologueRecords: [prologueRecord]
+      prologueRecords: [prologueRecord],
     });
 
     expect(timeline.worldId).toBe(world.id);
@@ -63,13 +65,13 @@ describe("framework engine flow", () => {
       world,
       city,
       fragment: fragment!,
-      prologueRecords: [prologueRecord]
+      prologueRecords: [prologueRecord],
     });
     const trace = performRuntimeAction({
       city,
       timeline,
       actionId: "placeholder-action-record",
-      now: "2026-01-01T00:00:00.000Z"
+      now: "2026-01-01T00:00:00.000Z",
     });
 
     expect(trace.type).toBe("system_record");
@@ -81,20 +83,20 @@ describe("framework engine flow", () => {
       world,
       city,
       fragment: fragment!,
-      prologueRecords: [prologueRecord]
+      prologueRecords: [prologueRecord],
     });
     const trace = performRuntimeAction({
       city,
       timeline,
       actionId: "placeholder-action-record",
-      now: "2026-01-01T00:00:00.000Z"
+      now: "2026-01-01T00:00:00.000Z",
     });
     const { pulse } = settleRuntimePulse({
       world,
       city,
       timeline,
       traces: [trace],
-      now: "2026-01-01T00:00:00.000Z"
+      now: "2026-01-01T00:00:00.000Z",
     });
 
     expect(pulse.stateBefore.trace_weight).toBe(0);
@@ -104,17 +106,84 @@ describe("framework engine flow", () => {
 
   it("selects anchor variants from conditions", () => {
     const anchor = city.anchors.find(
-      (candidate) => candidate.id === "placeholder-anchor-1"
+      (candidate) => candidate.id === "placeholder-anchor-1",
     );
 
     const selected = selectAnchorVariants(anchor, {
       continuity: 1,
-      trace_weight: 1
+      trace_weight: 1,
     });
 
     expect(selected.map((variant) => variant.id)).toContain(
-      "placeholder-variant-trace"
+      "placeholder-variant-trace",
     );
+  });
+
+  it("selects anchor variants from trace conditions", () => {
+    const timeline = createPlayerTimelineFromFragment({
+      world,
+      city,
+      fragment: fragment!,
+      prologueRecords: [prologueRecord],
+    });
+    const trace = performRuntimeAction({
+      city,
+      timeline,
+      actionId: "placeholder-action-record",
+      now: "2026-01-01T00:00:00.000Z",
+    });
+    const anchor = structuredClone(
+      city.anchors.find(
+        (candidate) => candidate.id === "placeholder-anchor-1",
+      )!,
+    );
+
+    anchor.variants[1]!.traceConditions = [
+      { visibility: "local", minCount: 1 },
+    ];
+
+    expect(
+      selectAnchorVariants(anchor, { continuity: 1, trace_weight: 1 }, []).map(
+        (variant) => variant.id,
+      ),
+    ).not.toContain("placeholder-variant-trace");
+    expect(
+      selectAnchorVariants(anchor, { continuity: 1, trace_weight: 1 }, [
+        trace,
+      ]).map((variant) => variant.id),
+    ).toContain("placeholder-variant-trace");
+  });
+
+  it("clamps state rule violations when enforcement is clamp", () => {
+    const clampedWorld = structuredClone(world);
+    clampedWorld.stateRules[0]!.enforcement = "clamp";
+    const timeline = createPlayerTimelineFromFragment({
+      world: clampedWorld,
+      city,
+      fragment: fragment!,
+      prologueRecords: [prologueRecord],
+    });
+    const trace = performRuntimeAction({
+      city,
+      timeline,
+      actionId: "placeholder-action-record",
+      now: "2026-01-01T00:00:00.000Z",
+    });
+    const { pulse } = settleRuntimePulse({
+      world: clampedWorld,
+      city,
+      timeline,
+      traces: [trace],
+      now: "2026-01-01T00:00:00.000Z",
+    });
+
+    expect(pulse.stateAfter.continuity).toBe(2);
+    expect(pulse.ruleAudit).toEqual([
+      expect.objectContaining({
+        ruleId: "continuity-daily-bound",
+        outcome: "clamped",
+      }),
+    ]);
   });
 
   it("creates an ObserverReport after settlement", () => {
@@ -122,27 +191,30 @@ describe("framework engine flow", () => {
       world,
       city,
       fragment: fragment!,
-      prologueRecords: [prologueRecord]
+      prologueRecords: [prologueRecord],
     });
     const trace = performRuntimeAction({
       city,
       timeline,
       actionId: "placeholder-action-record",
-      now: "2026-01-01T00:00:00.000Z"
+      now: "2026-01-01T00:00:00.000Z",
     });
     const { observerReport } = settleRuntimePulse({
       world,
       city,
       timeline,
       traces: [trace],
-      now: "2026-01-01T00:00:00.000Z"
+      now: "2026-01-01T00:00:00.000Z",
     });
 
     expect(observerReport.traceSummary).toHaveLength(1);
     expect(observerReport.stateDeltaSummary.length).toBeGreaterThan(0);
     expect(observerReport.selectedVariantSummary).toEqual([
       "placeholder-variant-neutral: Placeholder Variant Neutral",
-      "placeholder-variant-trace: Placeholder Variant With Trace"
+      "placeholder-variant-trace: Placeholder Variant With Trace",
+    ]);
+    expect(observerReport.ruleAuditSummary).toEqual([
+      expect.stringContaining("continuity-daily-bound: violation"),
     ]);
   });
 });

@@ -3,11 +3,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Lacuna Engine",
-  description: "TypeScript / Next.js monorepo for Lacuna Engine."
+  description: "TypeScript / Next.js monorepo for Lacuna Engine.",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {

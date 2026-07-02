@@ -13,8 +13,11 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "@lacuna-engine/content-loader": "workspace:*",
+    "@lacuna-engine/narrative-runtime": "workspace:*",
     "@lacuna-engine/schema": "workspace:*",
-    "@lacuna-engine/ui-kit": "workspace:*"
+    "@lacuna-engine/ui-kit": "workspace:*",
+    "@lacuna-engine/world-authoring": "workspace:*",
+    "yaml": "^2.8.2"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",

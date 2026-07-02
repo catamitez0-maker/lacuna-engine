@@ -2,6 +2,8 @@
 
 Read these documents before extending engine behavior:
 
+- [Developer Guide](./developer-guide.md)
+- [Editing Layers](./editing-layers.md)
 - [Architecture](./architecture.md)
 - [World Pack Spec](./world-pack-spec.md)
 - [City Module Spec](./city-module-spec.md)

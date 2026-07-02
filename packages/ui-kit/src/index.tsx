@@ -11,7 +11,7 @@ export function EnginePanel({
   title,
   eyebrow,
   children,
-  className = ""
+  className = "",
 }: EnginePanelProps) {
   return (
     <section
@@ -22,7 +22,9 @@ export function EnginePanel({
           {eyebrow}
         </p>
       ) : null}
-      {title ? <h2 className="mb-4 text-xl font-semibold text-ink">{title}</h2> : null}
+      {title ? (
+        <h2 className="mb-4 text-xl font-semibold text-ink">{title}</h2>
+      ) : null}
       {children}
     </section>
   );

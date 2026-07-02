@@ -9,9 +9,13 @@ datasource db {
 model World {
   id          String   @id
   name        String
+  schemaVersion String @default("0.1.0")
   version     String
   description String?
   enabled     Boolean  @default(false)
+  constantsJson String @default("[]")
+  stateRulesJson String @default("[]")
+  spineJson String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -98,6 +102,7 @@ model DailyPulse {
   traceIdsJson       String
   stateAfterJson     String
   selectedVariantIdsJson String
+  ruleAuditJson      String @default("[]")
   observerReportId   String
   createdAt          DateTime @default(now())
 
@@ -118,6 +123,7 @@ model ObserverReport {
   traceSummaryJson       String
   stateDeltaSummaryJson  String
   selectedVariantSummaryJson String
+  ruleAuditSummaryJson String @default("[]")
   createdAt              DateTime @default(now())
 
   world World       @relation(fields: [worldId], references: [id], onDelete: Cascade)
@@ -140,4 +146,3 @@ model RuntimeSession {
   traces Trace[]
   pulses DailyPulse[]
 }
-

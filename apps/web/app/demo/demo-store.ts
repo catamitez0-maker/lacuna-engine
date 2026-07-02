@@ -8,7 +8,7 @@ import {
   listIdentityFragments,
   performRuntimeAction,
   selectPrologueAction,
-  settleRuntimePulse
+  settleRuntimePulse,
 } from "@lacuna-engine/narrative-runtime";
 import type {
   CityModule,
@@ -19,7 +19,7 @@ import type {
   PrologueAction,
   Scene,
   Trace,
-  WorldPack
+  WorldPack,
 } from "@lacuna-engine/schema";
 
 export type DemoStep =
@@ -66,7 +66,7 @@ const initialDemoState = {
   scene: undefined,
   traces: [],
   pulse: undefined,
-  observerReport: undefined
+  observerReport: undefined,
 };
 
 export const useDemoStore = create<DemoStore>((set, get) => ({
@@ -76,7 +76,7 @@ export const useDemoStore = create<DemoStore>((set, get) => ({
       ...initialDemoState,
       step: "loaded",
       activeWorld: world,
-      city: getPrimaryCity(world)
+      city: getPrimaryCity(world),
     });
   },
   start: () => set({ step: "prologue" }),
@@ -92,7 +92,7 @@ export const useDemoStore = create<DemoStore>((set, get) => ({
     set({
       step: "fragments",
       records,
-      fragments: listIdentityFragments(city, records)
+      fragments: listIdentityFragments(city, records),
     });
   },
   chooseFragment: (fragmentId) => {
@@ -110,13 +110,13 @@ export const useDemoStore = create<DemoStore>((set, get) => ({
       world: activeWorld,
       city,
       fragment,
-      prologueRecords: records
+      prologueRecords: records,
     });
 
     set({
       step: "scene",
       timeline,
-      scene: getEntryScene(city, timeline)
+      scene: getEntryScene(city, timeline),
     });
   },
   performAction: (actionId) => {
@@ -129,12 +129,12 @@ export const useDemoStore = create<DemoStore>((set, get) => ({
       city,
       timeline,
       actionId,
-      sequence: traces.length + 1
+      sequence: traces.length + 1,
     });
 
     set({
       step: "trace",
-      traces: [...traces, trace]
+      traces: [...traces, trace],
     });
   },
   runPulse: () => {
@@ -147,14 +147,14 @@ export const useDemoStore = create<DemoStore>((set, get) => ({
       world: activeWorld,
       city,
       timeline,
-      traces
+      traces,
     });
 
     set({
       step: "report",
       pulse,
-      observerReport
+      observerReport,
     });
   },
-  reset: () => set(initialDemoState)
+  reset: () => set(initialDemoState),
 }));

@@ -8,7 +8,7 @@ import type {
   PlayerTimeline,
   Scene,
   Trace,
-  WorldPack
+  WorldPack,
 } from "@lacuna-engine/schema";
 import { DataBlock, EnginePanel } from "@lacuna-engine/ui-kit";
 import type { PrologueRecord } from "./demo-store";
@@ -18,7 +18,7 @@ export function WorldLoaderPanel({
   activeWorld,
   templateWorld,
   onLoadWorld,
-  onStart
+  onStart,
 }: {
   loaded: boolean;
   activeWorld?: WorldPack;
@@ -54,7 +54,7 @@ export function WorldLoaderPanel({
 
 export function ProloguePanel({
   city,
-  onChoose
+  onChoose,
 }: {
   city: CityModule;
   onChoose: (actionId: string) => void;
@@ -82,7 +82,7 @@ export function ProloguePanel({
 
 export function FragmentPanel({
   fragments,
-  onChoose
+  onChoose,
 }: {
   fragments: IdentityFragment[];
   onChoose: (fragmentId: string) => void;
@@ -113,7 +113,7 @@ export function FragmentPanel({
 export function RuntimeScenePanel({
   city,
   scene,
-  onPerformAction
+  onPerformAction,
 }: {
   city: CityModule;
   scene: Scene;
@@ -160,7 +160,7 @@ export function RuntimeDataGrid({
   timeline,
   traces,
   pulse,
-  observerReport
+  observerReport,
 }: {
   records: PrologueRecord[];
   timeline?: PlayerTimeline;
@@ -171,7 +171,9 @@ export function RuntimeDataGrid({
   return (
     <section className="grid gap-4 xl:grid-cols-2">
       {timeline ? <DataBlock title="PlayerTimeline" value={timeline} /> : null}
-      {records.length ? <DataBlock title="Prologue Record" value={records} /> : null}
+      {records.length ? (
+        <DataBlock title="Prologue Record" value={records} />
+      ) : null}
       {traces.length ? <DataBlock title="Trace list" value={traces} /> : null}
       {pulse ? <DataBlock title="DailyPulse result" value={pulse} /> : null}
       {pulse ? (
@@ -179,11 +181,13 @@ export function RuntimeDataGrid({
           title="City state before / after"
           value={{
             before: pulse.stateBefore,
-            after: pulse.stateAfter
+            after: pulse.stateAfter,
           }}
         />
       ) : null}
-      {observerReport ? <DataBlock title="ObserverReport" value={observerReport} /> : null}
+      {observerReport ? (
+        <DataBlock title="ObserverReport" value={observerReport} />
+      ) : null}
     </section>
   );
 }

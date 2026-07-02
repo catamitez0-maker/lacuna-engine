@@ -1,8 +1,39 @@
 id: empty-world-template
 name: Empty World Template
+schemaVersion: 0.1.0
 version: 0.1.0
 description: A disabled placeholder World Pack for validating the framework flow.
 enabled: false
+constants:
+  - id: continuity-is-trackable
+    title: Continuity Is Trackable
+    description: The framework can track continuity changes, but content must explain why they changed.
+    category: causal
+    severity: hard
+stateRules:
+  - id: continuity-daily-bound
+    title: Continuity Daily Bound
+    description: Placeholder continuity should only move in small, explainable steps.
+    stateKey: continuity
+    min: 0
+    max: 10
+    maxDailyDelta: 2
+    enforcement: report
+    constantRefs:
+      - continuity-is-trackable
+spine:
+  premise: A disabled placeholder world used to validate the engine flow.
+  currentEra: Framework validation
+  centralConflict: Whether a neutral content pack can move through identity, trace, pulse, and report stages.
+  fixedAnchorIds:
+    - placeholder-anchor-1
+  phases:
+    - id: placeholder-opening
+      title: Placeholder Opening
+      description: The first validation pass through the runtime.
+      order: 1
+      anchorIds:
+        - placeholder-anchor-1
 cities:
   - id: placeholder-city-module
     name: Placeholder City Module
@@ -75,9 +106,13 @@ cities:
         dayId: placeholder-day-1
         title: Placeholder Anchor
         fixed: true
+        constantRefs:
+          - continuity-is-trackable
         variants:
           - id: placeholder-variant-neutral
             title: Placeholder Variant Neutral
+            constantRefs:
+              - continuity-is-trackable
             conditions:
               - key: continuity
                 operator: ">="
@@ -86,6 +121,8 @@ cities:
               continuity: 1
           - id: placeholder-variant-trace
             title: Placeholder Variant With Trace
+            constantRefs:
+              - continuity-is-trackable
             conditions:
               - key: trace_weight
                 operator: ">="

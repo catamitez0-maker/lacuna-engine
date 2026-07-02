@@ -2,7 +2,7 @@ import {
   traceSchema,
   type PlaceholderAction,
   type PlayerTimeline,
-  type Trace
+  type Trace,
 } from "@lacuna-engine/schema";
 
 export type CreateTraceInput = {
@@ -16,7 +16,7 @@ export function createTraceFromAction({
   timeline,
   action,
   now = new Date().toISOString(),
-  sequence = 1
+  sequence = 1,
 }: CreateTraceInput): Trace {
   return traceSchema.parse({
     id: `${timeline.id}-trace-${sequence}`,
@@ -28,6 +28,6 @@ export function createTraceFromAction({
     visibility: action.trace.visibility,
     weight: action.trace.weight,
     effects: action.trace.effects,
-    createdAt: now
+    createdAt: now,
   });
 }

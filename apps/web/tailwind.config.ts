@@ -1,10 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: [
-    "./app/**/*.{ts,tsx}",
-    "../../packages/ui-kit/src/**/*.{ts,tsx}"
-  ],
+  content: ["./app/**/*.{ts,tsx}", "../../packages/ui-kit/src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -13,11 +10,11 @@ const config: Config = {
         rule: "#d9d4ca",
         signal: "#2563eb",
         ember: "#b45309",
-        moss: "#3f6212"
-      }
-    }
+        moss: "#3f6212",
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };
 
 export default config;

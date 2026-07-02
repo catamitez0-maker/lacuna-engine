@@ -8,18 +8,18 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: "http://127.0.0.1:3100",
-    trace: "on-first-retry"
+    trace: "on-first-retry",
   },
   webServer: {
     command: "corepack pnpm --dir apps/web exec next dev --port 3100",
     url: "http://127.0.0.1:3100/demo",
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000
+    timeout: 120_000,
   },
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] }
-    }
-  ]
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
 });

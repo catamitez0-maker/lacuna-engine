@@ -1,4 +1,7 @@
-export { loadEmptyWorldTemplate, loadWorldPackById } from "@lacuna-engine/content-loader";
+export {
+  loadEmptyWorldTemplate,
+  loadWorldPackById,
+} from "@lacuna-engine/content-loader/server";
 export { runFrameworkDemo } from "@lacuna-engine/narrative-runtime";
 export type {
   CityModule,
@@ -7,7 +10,7 @@ export type {
   ObserverReport,
   PlayerTimeline,
   Trace,
-  WorldPack
+  WorldPack,
 } from "@lacuna-engine/schema";
 
 export function createProjectTagline(): string {

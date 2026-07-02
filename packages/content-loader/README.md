@@ -1,7 +1,18 @@
 # @lacuna-engine/content-loader
 
-Loads disabled or active World Packs from the `content/worlds` directory and
-validates them with `@lacuna-engine/schema`.
+Parses and validates World Packs with `@lacuna-engine/schema`.
 
-This package is file-system based for the first version. Future loaders can add
-database, remote registry, or creator-studio sources behind the same contract.
+Use the root package for pure YAML/JSON source validation:
+
+```ts
+import { validateWorldPackSource } from "@lacuna-engine/content-loader";
+```
+
+Use the server subpath for Node file-system loading and split-pack hydration:
+
+```ts
+import { loadWorldPackById } from "@lacuna-engine/content-loader/server";
+```
+
+Server callers pass an explicit `contentDir` so Next builds do not need dynamic
+workspace discovery.

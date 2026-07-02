@@ -1,6 +1,9 @@
-import { validateAllWorldPacks } from "@lacuna-engine/content-loader";
+import { join } from "node:path";
+import { validateAllWorldPacks } from "@lacuna-engine/content-loader/server";
 
-const results = validateAllWorldPacks();
+const CONTENT_DIR = join(process.cwd(), "content/worlds");
+
+const results = validateAllWorldPacks({ contentDir: CONTENT_DIR });
 
 if (results.length === 0) {
   console.log("No World Packs found.");

@@ -1,11 +1,11 @@
 "use server";
 
 import { join } from "node:path";
-import { loadEmptyWorldTemplate } from "@lacuna-engine/content-loader";
+import { loadEmptyWorldTemplate } from "@lacuna-engine/content-loader/server";
 import {
   getPrismaClient,
   runPersistentFrameworkDemo,
-  type PersistedRuntimeSnapshot
+  type PersistedRuntimeSnapshot,
 } from "@lacuna-engine/persistence";
 
 export type PersistedDemoActionResult =
@@ -18,7 +18,10 @@ export type PersistedDemoActionResult =
       error: string;
     };
 
-const CONTENT_DIR = join(/* turbopackIgnore: true */ process.cwd(), "../../content/worlds");
+const CONTENT_DIR = join(
+  /* turbopackIgnore: true */ process.cwd(),
+  "../../content/worlds",
+);
 
 export async function runPersistedFrameworkDemoAction(): Promise<PersistedDemoActionResult> {
   try {
@@ -28,12 +31,12 @@ export async function runPersistedFrameworkDemoAction(): Promise<PersistedDemoAc
 
     return {
       ok: true,
-      snapshot
+      snapshot,
     };
   } catch (error) {
     return {
       ok: false,
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }

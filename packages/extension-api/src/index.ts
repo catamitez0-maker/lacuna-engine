@@ -4,7 +4,7 @@ import type {
   PlayerTimeline,
   Scene,
   Trace,
-  WorldPack
+  WorldPack,
 } from "@lacuna-engine/schema";
 
 export type ExtensionContext = {
@@ -53,6 +53,6 @@ export function createEmptyExtensionRegistry(): ExtensionRegistry {
     narrators: [],
     visualNovelLayers: [],
     mediaRenderers: [],
-    miniGames: []
+    miniGames: [],
   };
 }

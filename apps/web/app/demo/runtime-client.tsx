@@ -9,13 +9,16 @@ import {
   ProloguePanel,
   RuntimeDataGrid,
   RuntimeScenePanel,
-  WorldLoaderPanel
+  WorldLoaderPanel,
 } from "./demo-panels";
-import { runPersistedFrameworkDemoAction, type PersistedDemoActionResult } from "./actions";
+import {
+  runPersistedFrameworkDemoAction,
+  type PersistedDemoActionResult,
+} from "./actions";
 import { useDemoStore } from "./demo-store";
 
 export function DemoRuntimeClient({
-  templateWorld
+  templateWorld,
 }: {
   templateWorld: WorldPack;
 }) {
@@ -36,7 +39,7 @@ export function DemoRuntimeClient({
     chooseFragment,
     performAction,
     runPulse,
-    reset
+    reset,
   } = useDemoStore();
   const [persistedResult, setPersistedResult] =
     useState<PersistedDemoActionResult | null>(null);
@@ -67,7 +70,9 @@ export function DemoRuntimeClient({
             </h1>
           </div>
           <div className="flex flex-wrap gap-2">
-            <StatusPill>{loaded ? activeWorld?.id : "No active world loaded"}</StatusPill>
+            <StatusPill>
+              {loaded ? activeWorld?.id : "No active world loaded"}
+            </StatusPill>
             <StatusPill>{step}</StatusPill>
           </div>
         </header>
@@ -84,7 +89,9 @@ export function DemoRuntimeClient({
           <div className="grid gap-5">
             {city ? (
               <EnginePanel title={city.name} eyebrow="City Module">
-                <p className="text-sm leading-7 text-slate-600">{city.description}</p>
+                <p className="text-sm leading-7 text-slate-600">
+                  {city.description}
+                </p>
               </EnginePanel>
             ) : null}
 
@@ -104,13 +111,15 @@ export function DemoRuntimeClient({
               />
             ) : null}
 
-            {step === "trace" ? <DailyPulsePanel onRunPulse={runPulse} /> : null}
-
+            {step === "trace" ? (
+              <DailyPulsePanel onRunPulse={runPulse} />
+            ) : null}
 
             <EnginePanel title="Persisted Runtime" eyebrow="Prisma">
               <div className="grid gap-3 text-sm leading-6 text-slate-600">
                 <p>
-                  Run the same framework flow through the Prisma-backed repository.
+                  Run the same framework flow through the Prisma-backed
+                  repository.
                 </p>
                 <button
                   className="w-fit rounded bg-ink px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
@@ -121,7 +130,9 @@ export function DemoRuntimeClient({
                   {isPersisting ? "Persisting..." : "Run persisted demo"}
                 </button>
                 {persistedResult?.ok === false ? (
-                  <p className="text-sm text-red-700">{persistedResult.error}</p>
+                  <p className="text-sm text-red-700">
+                    {persistedResult.error}
+                  </p>
                 ) : null}
                 {persistedResult?.ok ? (
                   <DataBlock

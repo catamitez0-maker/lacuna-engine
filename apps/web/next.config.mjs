@@ -4,8 +4,8 @@ const nextConfig = {
     "@lacuna-engine/content-loader",
     "@lacuna-engine/narrative-runtime",
     "@lacuna-engine/schema",
-    "@lacuna-engine/ui-kit"
-  ]
+    "@lacuna-engine/ui-kit",
+  ],
 };
 
 export default nextConfig;
