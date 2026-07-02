@@ -74,6 +74,9 @@ importers:
       "@lacuna-engine/content-loader":
         specifier: workspace:*
         version: link:../../packages/content-loader
+      "@lacuna-engine/extension-api":
+        specifier: workspace:*
+        version: link:../../packages/extension-api
       "@lacuna-engine/narrative-runtime":
         specifier: workspace:*
         version: link:../../packages/narrative-runtime

@@ -19,3 +19,10 @@ core runtime until they have stable requirements.
 
 Provider-specific adapters can map these interfaces to a self-hosted model, a
 general model API, a specialized model, or a hybrid router later.
+
+## Mock Adapters
+
+`createMockAiStewardAgent` and `createMockNpcAgent` provide deterministic
+proposal generators for Studio workflows. They do not call a model, mutate
+content, persist changes, or apply patches. `createManualAiProposalReview`
+creates the current preview-only review state for AI steward proposals.

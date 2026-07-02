@@ -148,3 +148,7 @@ Runtime sessions can be inspected and controlled through `GET /api/sessions/:ses
 
 The first version exports interfaces only. No AI, image generation, TTS, or
 complex visual novel UI is wired into the runtime.
+
+Studio includes a deterministic AI Workbench that uses mock AI steward and NPC
+agent adapters. It previews proposals and review status only; no AI proposal is
+applied to content.

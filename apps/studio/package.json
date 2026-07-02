@@ -13,6 +13,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "@lacuna-engine/content-loader": "workspace:*",
+    "@lacuna-engine/extension-api": "workspace:*",
     "@lacuna-engine/narrative-runtime": "workspace:*",
     "@lacuna-engine/schema": "workspace:*",
     "@lacuna-engine/ui-kit": "workspace:*",

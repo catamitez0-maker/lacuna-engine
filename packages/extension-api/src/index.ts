@@ -69,6 +69,20 @@ export type AiProposal<TPayload = unknown> = {
   audit: AiAgentAudit;
 };
 
+export type AiProposalReviewStatus =
+  | "preview"
+  | "ready_for_human_review"
+  | "blocked";
+
+export type AiProposalReview = {
+  proposalId: string;
+  status: AiProposalReviewStatus;
+  canApply: false;
+  requiresHumanApproval: true;
+  messages: string[];
+  proposedPatchCount: number;
+};
+
 export type AiStewardTask =
   | "world_health_check"
   | "rule_consistency_review"
@@ -159,6 +173,126 @@ export interface NpcAgent {
   ): Promise<ExtensionResult<AiProposal<NpcActionProposal>>>;
 }
 
+export const mockAiProvider: AiAgentProviderDescriptor = {
+  id: "mock-ai-provider",
+  label: "Mock AI Provider",
+  executionMode: "manual",
+  modelFamily: "deterministic-placeholder",
+  capabilities: ["structured_output"],
+};
+
+export const humanApprovedProposalSafety: AiSafetyBoundary = {
+  canMutateWorld: false,
+  canPersistChanges: false,
+  canCallExternalTools: false,
+  requiresHumanApproval: true,
+  notes: ["Mock agents return inert proposals only."],
+};
+
+export function createManualAiProposalReview(
+  proposal: AiProposal<AiStewardPlan>,
+): AiProposalReview {
+  const proposedPatchCount = proposal.payload.suggestions.filter(
+    (suggestion) => suggestion.proposedPatch,
+  ).length;
+
+  return {
+    proposalId: proposal.id,
+    status: "ready_for_human_review",
+    canApply: false,
+    requiresHumanApproval: true,
+    proposedPatchCount,
+    messages: [
+      "Proposal preview is available.",
+      "No apply adapter is connected; writing to content is disabled.",
+      "Human approval is required before any future write path can run.",
+    ],
+  };
+}
+
+export function createMockAiStewardAgent(
+  id = "mock-ai-steward",
+): AiStewardAgent {
+  return {
+    id,
+    provider: mockAiProvider,
+    safety: humanApprovedProposalSafety,
+    async propose(input) {
+      const suggestions = buildMockStewardSuggestions(input);
+
+      return {
+        extensionId: id,
+        payload: {
+          id: `${input.world.id}-${input.task}-proposal`,
+          title: `Mock ${input.task.replaceAll("_", " ")} proposal`,
+          summary:
+            suggestions.length > 0
+              ? `${suggestions.length} review suggestions generated.`
+              : "No review suggestions generated.",
+          payload: {
+            task: input.task,
+            suggestions,
+          },
+          audit: {
+            providerId: mockAiProvider.id,
+            modelId: "mock-deterministic-agent",
+            promptVersion: "mock-v1",
+            confidence: 0,
+            reasoningSummary:
+              "Deterministic placeholder based on World Pack structure only.",
+            warnings: ["No AI model is connected."],
+          },
+        },
+      };
+    },
+  };
+}
+
+export function createMockNpcAgent(id = "mock-npc-agent"): NpcAgent {
+  return {
+    id,
+    provider: mockAiProvider,
+    safety: humanApprovedProposalSafety,
+    async proposeAction(input) {
+      const city = input.city ?? input.world.cities[0];
+      const availableActionIds =
+        input.availableActionIds ??
+        city?.placeholderActions.map((action) => action.id) ??
+        [];
+      const action = city?.placeholderActions.find(
+        (candidate) => candidate.id === availableActionIds[0],
+      );
+      const intent = input.objective?.trim() || "observe";
+
+      return {
+        extensionId: id,
+        payload: {
+          id: `${input.npcId}-mock-action-proposal`,
+          title: "Mock NPC action proposal",
+          summary: "A deterministic NPC proposal was generated.",
+          payload: {
+            npcId: input.npcId,
+            actionId: action?.id,
+            intent,
+            dialogue: "A placeholder NPC line would appear here.",
+            traceEffects: action?.trace.effects ?? {},
+            visibility: action?.trace.visibility,
+            rationale:
+              "Mock NPC agent selects the first available action and echoes the requested objective.",
+          },
+          audit: {
+            providerId: mockAiProvider.id,
+            modelId: "mock-deterministic-agent",
+            promptVersion: "mock-v1",
+            confidence: 0,
+            warnings: ["No AI model is connected."],
+          },
+        },
+      };
+    },
+  };
+}
+
 export interface NarratorExtension {
   id: string;
   describeScene(context: ExtensionContext): Promise<ExtensionResult<string>>;
@@ -197,4 +331,93 @@ export function createEmptyExtensionRegistry(): ExtensionRegistry {
     mediaRenderers: [],
     miniGames: [],
   };
+}
+
+function buildMockStewardSuggestions(
+  input: AiStewardInput,
+): AiStewardSuggestion[] {
+  const suggestions: AiStewardSuggestion[] = [];
+
+  if (input.world.constants.length === 0) {
+    suggestions.push({
+      kind: "world_constant",
+      priority: "high",
+      rationale: "World Pack has no world constants reserved.",
+      proposedPatch: {
+        constants: [
+          {
+            id: "placeholder-world-constant",
+            title: "Placeholder World Constant",
+            severity: "soft",
+          },
+        ],
+      },
+    });
+  }
+
+  for (const rule of input.world.stateRules) {
+    if (rule.constantRefs.length === 0) {
+      suggestions.push({
+        kind: "state_rule",
+        priority: "medium",
+        targetId: rule.id,
+        rationale: `State rule ${rule.id} does not reference a world constant.`,
+        relatedStateRules: [rule],
+      });
+    }
+  }
+
+  if (!input.world.spine) {
+    suggestions.push({
+      kind: "spine",
+      priority: "high",
+      rationale: "World Pack has no spine definition.",
+    });
+  } else if (input.world.spine.phases.length === 0) {
+    suggestions.push({
+      kind: "spine",
+      priority: "medium",
+      rationale: "World spine has no phases.",
+    });
+  }
+
+  for (const city of input.world.cities) {
+    if (city.anchors.length === 0) {
+      suggestions.push({
+        kind: "anchor",
+        priority: "medium",
+        targetId: city.id,
+        rationale: `City module ${city.id} has no anchors.`,
+      });
+    }
+
+    if (city.placeholderActions.length === 0) {
+      suggestions.push({
+        kind: "trace_action",
+        priority: "high",
+        targetId: city.id,
+        rationale: `City module ${city.id} has no placeholder trace actions.`,
+      });
+    }
+  }
+
+  if (input.observerReport) {
+    suggestions.push({
+      kind: "validation_note",
+      priority: "low",
+      targetId: input.observerReport.id,
+      rationale: "Observer report is available for future simulation review.",
+    });
+  }
+
+  if (input.task === "simulation_interpretation" && !input.observerReport) {
+    suggestions.push({
+      kind: "validation_note",
+      priority: "medium",
+      rationale:
+        "Simulation interpretation was requested without an observer report.",
+    });
+  }
+
+  return suggestions;
 }

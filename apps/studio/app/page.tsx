@@ -8,6 +8,7 @@ import {
 } from "@lacuna-engine/content-loader/server";
 import { WorldSourceEditor } from "./components/world-source-editor";
 import { WorldStructuredEditor } from "./components/world-structured-editor";
+import { WorldAiWorkbench } from "./components/world-ai-workbench";
 
 const CONTENT_DIR = join(
   /* turbopackIgnore: true */ process.cwd(),
@@ -58,6 +59,7 @@ export default function StudioPage() {
                 {result.ok && result.world ? (
                   <>
                     <WorldPreview world={result.world} />
+                    <WorldAiWorkbench world={result.world} />
                     <WorldStructuredEditor world={result.world} />
                   </>
                 ) : (

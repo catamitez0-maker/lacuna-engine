@@ -45,3 +45,17 @@ The interfaces intentionally avoid naming a model provider. A future adapter may
 target a self-hosted model, a general model API, a specialized model, or a hybrid
 router. Provider metadata is represented by `AiAgentProviderDescriptor`, and
 safety expectations are represented by `AiSafetyBoundary`.
+
+## Mock Workflow
+
+The first usable workflow is deterministic:
+
+- `createMockAiStewardAgent` generates creator-facing review suggestions.
+- `createMockNpcAgent` generates NPC action proposals from available placeholder
+  actions.
+- `createManualAiProposalReview` marks steward proposals as preview-ready but
+  not applicable.
+
+Studio can render these proposals today. Applying proposals to `world.yaml`
+remains deliberately disconnected until a human approval and validation pipeline
+is added.
