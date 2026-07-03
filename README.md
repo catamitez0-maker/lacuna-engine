@@ -1,86 +1,169 @@
 # Lacuna Engine
 
-Lacuna Engine is a neutral TypeScript / Next.js monorepo skeleton for
+Lacuna Engine is a neutral TypeScript / Next.js monorepo for building
 asynchronous narrative world systems.
 
-It is not a concrete novel project. It does not ship named cities, named
-characters, chapters, fictional canon, or IP-specific lore. The repository
-contains schemas, runtime packages, a disabled empty World Pack template, and a
-minimal reader demo that proves the data flow.
+It is not a concrete novel, setting, city, character roster, chapter system, or
+IP-specific story project. The repository provides the engine contracts and
+developer surfaces needed to load World Packs, map reader identities, record
+historical traces, settle daily world pulses, resolve anchor variants, archive
+observer reports, and reserve future AI or media integrations.
 
-## What Is Included
+## Status
+
+The project currently includes:
+
+- a disabled `empty-world-template` World Pack for framework validation
+- a reader-facing `/demo` flow in `apps/web`
+- a creator workbench in `apps/studio`
+- Prisma + SQLite persistence for runtime sessions and pulse outputs
+- structured editing for world constants, state rules, spine, city fields,
+  scenes, placeholder actions, and anchor variants
+- deterministic mock AI steward and NPC agent proposal flows
+- content validation, unit tests, package type builds, and Next production
+  builds through one `check` command
+
+No real AI model, image generation, TTS, account system, or visual novel layer is
+connected yet.
+
+## Core Loop
+
+The engine is organized around an auditable narrative loop:
 
 ```txt
-apps/
-  web/       Reader-facing framework demo at /demo
-  studio/    Creator review, structured edit, and raw World Pack editing surface
-packages/
-  kernel/
-  schema/
-  content-loader/
-  identity-mapper/
-  trace-ledger/
-  pulse-engine/
-  anchor-resolver/
-  observer-archive/
-  narrative-runtime/
-  persistence/
-  extension-api/
-  ui-kit/
-content/
-  worlds/empty-world-template/
-prisma/
-  schema.prisma
-  migrations/
-docs/
-tests/
+World Constants
+  -> State Model
+  -> Spine / Anchors
+  -> Reader Actions
+  -> Historical Traces
+  -> Daily Pulse
+  -> Anchor Variant Selection
+  -> Observer Archive
+  -> Validation / Review
 ```
 
-For a developer-oriented map of the codebase, read
+Reader actions do not directly rewrite the main plot. They create traces.
+Traces influence numeric world state. World constants and state rules constrain
+how state may change. Anchors keep the major narrative skeleton stable while
+allowing variant selection based on state and trace conditions.
+
+## Apps
+
+| App           | Purpose                                                                                                        |
+| ------------- | -------------------------------------------------------------------------------------------------------------- |
+| `apps/web`    | Reader-facing framework demo at `/demo`.                                                                       |
+| `apps/studio` | Creator workbench for validation, structured edits, raw source edits, simulation, and mock AI proposal review. |
+
+## Packages
+
+| Package             | Responsibility                                                                                  |
+| ------------------- | ----------------------------------------------------------------------------------------------- |
+| `schema`            | Zod schemas, TypeScript types, graph validation, and schema version contracts.                  |
+| `content-loader`    | Load and validate single-file or split-directory World Packs.                                   |
+| `identity-mapper`   | Convert prologue actions into identity fragments.                                               |
+| `trace-ledger`      | Create trace records from runtime actions.                                                      |
+| `pulse-engine`      | Apply trace effects, state rules, and daily settlement logic.                                   |
+| `anchor-resolver`   | Select anchor variants from state and trace conditions.                                         |
+| `observer-archive`  | Generate observer reports and rule audit summaries.                                             |
+| `narrative-runtime` | Coordinate scenes, actions, timelines, pulses, sessions, and demo flow.                         |
+| `persistence`       | Prisma Client setup, repository functions, runtime snapshots, and SQLite mapping.               |
+| `world-authoring`   | Structured World Pack patch logic used by Studio.                                               |
+| `extension-api`     | Provider-agnostic extension contracts for AI, NPC agents, media, mini games, and future layers. |
+| `kernel`            | Public entrypoint that re-exports core runtime helpers.                                         |
+| `ui-kit`            | Shared UI primitives.                                                                           |
+
+For a deeper code map, read
 [`docs/developer-guide.md`](./docs/developer-guide.md).
 
-## Start
+## Requirements
+
+- Node.js 22 or newer
+- Corepack-enabled `pnpm`
+
+## Quick Start
 
 ```bash
 corepack pnpm install
 corepack pnpm dev
 ```
 
-Then open `http://localhost:3000/demo`.
+Open:
 
-## Commands
+```txt
+http://localhost:3000/demo
+```
+
+To run Studio:
+
+```bash
+corepack pnpm --filter @lacuna-engine/studio dev --port 3200
+```
+
+Open:
+
+```txt
+http://localhost:3200
+```
+
+## Common Commands
 
 ```bash
 corepack pnpm dev
 corepack pnpm test
 corepack pnpm typecheck
 corepack pnpm lint
+corepack pnpm content:validate
+corepack pnpm build
+corepack pnpm check
+```
+
+`corepack pnpm check` is the normal pre-commit verification command. It runs
+linting, type checks, content validation, Vitest, package declaration builds,
+and both Next app builds.
+
+Database commands:
+
+```bash
 corepack pnpm db:generate
 corepack pnpm db:migrate
 corepack pnpm db:deploy
 corepack pnpm db:push
-corepack pnpm content:validate
+```
+
+End-to-end tests:
+
+```bash
 corepack pnpm test:e2e
 ```
 
-Use `corepack pnpm check` as the normal pre-commit verification command. It
-runs linting, type checks, content validation, Vitest, package declaration
-builds, and both Next app builds.
+Playwright may require system browser dependencies on a new machine.
 
-## Add A New World Pack
+## World Packs
+
+A World Pack is the portable content contract for a narrative world. A pack may
+be a single `world.yaml` file or a split directory with files under `cities/`,
+`roles/`, `days/`, `anchors/`, `scenes/`, `actions/`, and
+`prologue-actions/`.
+
+To add a new pack:
 
 1. Create `content/worlds/<world-id>/world.yaml`.
-2. Follow the `WorldPack` schema from `@lacuna-engine/schema`.
-3. Set `schemaVersion: 0.1.0` for the current engine contract.
-4. Keep concrete story content inside the pack, never in app components.
-5. Keep `enabled: false` until an app or creator workflow explicitly selects it.
-6. Run `corepack pnpm content:validate` and `corepack pnpm test`.
+2. Use `schemaVersion: 0.1.0`.
+3. Keep concrete story content inside the pack, not in app components.
+4. Keep `enabled: false` until an app or creator workflow explicitly selects it.
+5. Run `corepack pnpm content:validate`.
+6. Run `corepack pnpm test`.
 
-## Add A City Module
+The loader and schema validation check semantic versions, duplicate IDs,
+cross-references, state keys used by effects or conditions, prologue action
+coverage, orphan anchors, and orphan placeholder actions.
 
-Add a city module object to the World Pack `cities` array. Include:
+## City Modules
 
-- `stateSchema` and `initialState`
+Each city or region module should define:
+
+- `stateSchema`
+- `initialState`
 - `entryRoles`
 - `identityFragments`
 - `days`
@@ -89,29 +172,13 @@ Add a city module object to the World Pack `cities` array. Include:
 - `prologueActions`
 - `placeholderActions`
 
-The app reads these values through `@lacuna-engine/content-loader`; it should
-not hardcode module content.
+The apps read this data through `@lacuna-engine/content-loader`. Runtime and UI
+code should not hardcode story content.
 
-## Add An Entry Role
+## Runtime Sessions
 
-Add an `EntryRole` with `entryDayId`, `entrySceneId`, `influenceRadius`,
-`knowledgeTags`, and `accessTags`. Then map one or more `IdentityFragment`
-records to that role.
-
-## Add A Trace Type
-
-Trace types are defined in `packages/schema`. After changing the enum, update
-`trace-ledger`, `pulse-engine`, tests, and any Prisma persistence mapping.
-
-## Add Daily Pulse Rules
-
-Daily Pulse rules are numeric effects today. Add trace `effects` and anchor
-variant `conditions` / `effects` in the World Pack. The `pulse-engine` applies
-trace effects, resolves anchor variants, and returns state before/after.
-
-## Persistence And Sessions
-
-`@lacuna-engine/persistence` wraps Prisma 7, SQLite adapter setup, JSON field mapping, and repository functions for:
+`@lacuna-engine/persistence` wraps Prisma 7, SQLite adapter setup, JSON field
+mapping, and repository functions for:
 
 - seeding World Packs and City Modules
 - saving Player Timelines
@@ -119,24 +186,40 @@ trace effects, resolves anchor variants, and returns state before/after.
 - creating Runtime Sessions
 - settling one Daily Pulse from traces across multiple timelines
 
-Run `corepack pnpm db:migrate` for local schema changes or `corepack pnpm db:deploy` to apply committed migrations. `db:push` is still available for disposable prototype databases. The `/demo` page includes both the in-memory framework flow and a Prisma-backed persisted snapshot action.
+The `/demo` page includes both the in-memory framework flow and a Prisma-backed
+persisted snapshot action.
 
-Runtime sessions can be inspected and controlled through `GET /api/sessions/:sessionId` and `PATCH /api/sessions/:sessionId` with `status` set to `open`, `paused`, or `archived`.
+Runtime sessions can be inspected and controlled through:
 
-## Content Validation
+```txt
+GET   /api/sessions/:sessionId
+PATCH /api/sessions/:sessionId
+```
 
-`corepack pnpm content:validate` scans `content/worlds` and validates every World Pack. The loader supports both single-file packs and split directories such as `cities/`, `roles/`, `days/`, `anchors/`, `scenes/`, `actions/`, and `prologue-actions/`. Validation checks schema version support, semantic content versions, duplicate IDs, cross-references, state keys used by effects/conditions, prologue action coverage, and orphan anchors/actions.
+`PATCH` accepts `status` values of `open`, `paused`, or `archived`.
 
 ## Studio
 
-`apps/studio` provides a minimal World Pack workbench: validation status, enabled state, city metrics, structured forms for world constants, state rules, spine, city, scene, action, and anchor fields, raw `world.yaml` editing, save-before-write validation, and refreshed validation results after save.
+`apps/studio` is the creator workbench. It currently provides:
 
-## Future Extensions
+- World Pack validation status
+- enabled state and city metrics
+- structured editing for constants, state rules, spine, city fields, scenes,
+  actions, and anchor variants
+- raw `world.yaml` editing with save-before-write validation
+- simulation output with state deltas, selected variants, traces, rule audit,
+  and observer lines
+- AI Workbench proposal previews powered by deterministic mock agents
+
+The AI Workbench does not apply proposals to content. It only previews steward
+review suggestions, NPC action proposals, and proposal review status.
+
+## AI And Extensions
 
 `@lacuna-engine/extension-api` reserves typed hooks for:
 
 - AI narrator adapters
-- AI steward / hosted world-management agents
+- AI steward or hosted world-management agents
 - NPC AI agents
 - visual novel layers
 - image or media renderers
@@ -146,9 +229,34 @@ Runtime sessions can be inspected and controlled through `GET /api/sessions/:ses
 - multiplayer accounts
 - creator studio tools
 
-The first version exports interfaces only. No AI, image generation, TTS, or
-complex visual novel UI is wired into the runtime.
+The extension layer is provider-agnostic. A future adapter can target a
+self-hosted model, a general model API, a specialized model, or a hybrid router.
+Current mock agents are deterministic and return inert proposals only.
 
-Studio includes a deterministic AI Workbench that uses mock AI steward and NPC
-agent adapters. It previews proposals and review status only; no AI proposal is
-applied to content.
+## Documentation
+
+Start here:
+
+- [Developer Guide](./docs/developer-guide.md)
+- [Architecture](./docs/architecture.md)
+- [Editing Layers](./docs/editing-layers.md)
+- [World Pack Spec](./docs/world-pack-spec.md)
+- [City Module Spec](./docs/city-module-spec.md)
+- [Extension API](./docs/extension-api.md)
+- [Persistence](./docs/persistence.md)
+- [Runtime Session](./docs/runtime-session.md)
+
+The docs intentionally describe engine structure rather than fictional content.
+
+## Current Boundaries
+
+The repository deliberately avoids:
+
+- concrete story canon
+- named cities or characters beyond neutral placeholders
+- real AI provider integrations
+- generated images, TTS, or visual novel presentation
+- account, permission, or multiplayer production workflows
+
+Those systems should be added through World Packs or extension adapters rather
+than directly inside core runtime packages.
